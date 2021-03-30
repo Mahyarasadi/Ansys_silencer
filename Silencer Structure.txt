@@ -1,7 +1,7 @@
 finish
 /clear
 /prep7
-Weight1=-20000 !Newtons
+Weight1=-20000 !This is the value of external loads on the structure
 k,	1	,	0	,	0	,	0
 k,	2	,	2	,	0	,	0
 k,	3	,	0	,	2	,	0
