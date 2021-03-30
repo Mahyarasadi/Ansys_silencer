@@ -1,0 +1,154 @@
+finish
+/clear
+/prep7
+Weight1=-20000 !Newtons
+k,	1	,	0	,	0	,	0
+k,	2	,	2	,	0	,	0
+k,	3	,	0	,	2	,	0
+k,	4	,	2	,	2	,	0
+k,	5	,	0.03	,	0.03	,	0.5
+k,	6	,	0.03	,	1.97	,	0.5
+k,	7	,	1.97	,	0.03	,	0.5
+k,	8	,	1.97	,	1.97	,	0.5
+k,	9	,	0.115	,	1.885	,	2
+k,	10	,	0.115	,	0.115	,	2
+k,	11	,	1.885	,	0.115	,	2
+k,	12	,	1.885	,	1.885	,	2
+k,	13	,	0.235	,	0.235	,	4
+k,	14	,	0.235	,	1.765	,	4
+k,	15	,	1.765	,	1.765	,	4
+k,	16	,	1.765	,	0.235	,	4
+k,	17	,	0.35	,	0.35	,	6
+k,	18	,	1.65	,	1.65	,	6
+k,	19	,	0.35	,	1.65	,	6
+k,	20	,	1.65	,	0.35	,	6
+k,	21	,	0.35	,	0.35	,	8
+k,	22	,	1.65	,	1.65	,	8
+k,	23	,	0.35	,	1.65	,	8
+k,	24	,	1.65	,	0.35	,	8
+
+l,1,2   
+l,2,4   
+l,4,3   
+l,3,1   
+l,5,7   
+l,7,8   
+l,8,6   
+l,6,5   
+l,10,11 
+l,11,12 
+l,12,9  
+l,9,10  
+l,14,15 
+l,16,13 
+l,13,14 
+l,15,16
+l,18,19 
+l,18,20 
+l,20,17 
+l,17,19 
+l,22,24 
+l,23,22 
+l,21,24 
+l,21,23 
+l,3,6   
+l,4,8   
+l,2,7   
+l,1,5   
+l,5,10  
+l,7,11  
+l,6,9   
+l,8,12  
+l,12,15 
+l,9,14  
+l,11,16 
+l,15,18 
+l,14,19 
+l,13,17 
+l,16,20 
+l,20,24 
+l,18,22 
+l,17,21 
+l,19,23 
+l,10,13
+
+
+
+
+! Definition of beam sections
+!Section A
+SECTYPE,   1, BEAM, HREC, , 0   
+SECOFFSET, CENT 
+SECDATA,0.1,0.1,0.002,0.002,.002,0.002,0,0,0,0,0,0  
+!Section C
+SECTYPE,   3, BEAM, L, , 0  
+SECOFFSET, CENT 
+SECDATA,0.09,0.09,0.009,0.009,0,0,0,0,0,0,0,0   
+lesize,all,,,10
+!Material Structural Steel St37
+MP,EX,1,210e9 ! Young's Modulus
+MP,PRXY,1,0.3 ! Poisson's ratio
+MP,DENS,1,7800 ! Density
+ET,1,BEAM188,,,2
+
+TYPE,1
+MAT,1
+SECNUM,   1 
+*do,i,5,16,1
+LMESH, i
+*ENDDO
+*do,i,25,44,1
+LMESH, i
+*ENDDO
+TYPE,1
+MAT,1
+SECNUM,   3
+*do,i,17,24,1
+LMESH, i
+*ENDDO
+!/PSYMB,ESYS,1
+/SHRINK,0   
+/ESHAPE,1.0 
+/EFACET,1   
+/RATIO,1,1,1
+/CFORMAT,32,0   
+/REPLOT 
+eplot
+
+
+ALLSEL,ALL  
+NSEL,S,LOC,Z,0
+d,all,all
+ALLSEL,ALL 
+fzx=Weight1/4
+NSEL,S,LOC,Z,8  
+NSEL,R,LOC,X,1   
+F,all,fZ,fzx
+ALLSEL,ALL 
+NSEL,S,LOC,Z,8  
+NSEL,R,LOC,Y,1   
+F,all,fZ,fzx
+ALLSEL,ALL 
+/replot
+!~eui,'package require ansys'
+
+!~eui,'ansys::report::setdirectory "Radiator Structure"' 
+
+!/REPLOT,RESIZE  
+! Support Nodes:43 54 76 65 12 22
+ACEL,0,0,-9.81 
+nummrg,node,.000001
+ALLSEL,ALL  
+finish
+/SOL
+ANTYPE,0
+NLGEOM,1
+solve
+finish
+/POST1  
+/EFACET,1   
+PLNSOL, S,EQV, 0,1.0
+!PLNSOL, U,SUM, 0,1.0
+/VIEW,1,1,1,1   
+/ANG,1  
+/REP,FAST   
