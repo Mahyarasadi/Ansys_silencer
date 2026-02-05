@@ -1,27 +1,14 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-"""
-self.fft[self.axis_names[i]] = self._calculate_fft(data_raw[:, i])
-    @staticmethod
-    def _calculate_fft(vib_array):
-        window_signal = np.hanning(len(vib_array))
-        hanning_gain = np.sum(window_signal) / len(window_signal)
-        vib_array = window_signal * vib_array / hanning_gain
-        # Normalize FFT amplitudes from Peak to RMS
-        amp = np.fft.fft(vib_array) / len(vib_array)
-        amp = np.sqrt(2) * abs(amp[range(int(len(vib_array) / 2))])
-        return amp.tolist()
 
-"""
-
-
-duration = 1.35
-samplerate = 1024
+# tests dur2,fs2048, F33.5, 33.25 Hz
+duration = 1.86
+samplerate = 2048
 dt = 1 / samplerate
 time_vector = np.linspace(0, duration, int(
     samplerate * duration), endpoint=False)
-time_signal = 2 * np.sin(2 * np.pi * 43 * time_vector)
+time_signal = 2 * np.sin(2 * np.pi * 33.0 * time_vector)
 
 # OLD ALGORITHM
 
@@ -44,23 +31,20 @@ fft_amp = _calculate_fft(time_signal)
 
 
 # NEW ALGORITHM
-def _calculate_fft_new(vib_array, dt):
+def _calculate_fft_new(vib_array):
     vib_array = np.asarray(vib_array)
     window_signal = np.hanning(len(vib_array))
     hanning_gain = np.sum(window_signal) / len(window_signal)
     vib_array = window_signal * vib_array / hanning_gain
     n = len(vib_array)
-    vib_array = np.fft.rfft(vib_array) * dt
-    vib_array = np.abs(vib_array)
+    vib_array = np.fft.rfft(vib_array)
+    vib_array = np.sqrt(2) * np.abs(vib_array) / n
     return vib_array.tolist()
 
 
-time_vector_new = np.linspace(0, duration, int(
-    samplerate * duration), endpoint=False)
-
 fft_freq_new = np.fft.rfftfreq(len(time_signal), dt)
-fft_amp_new = _calculate_fft_new(time_signal, dt)
-
+fft_amp_new = _calculate_fft_new(time_signal)
+print(len(fft_amp), len(fft_amp_new))
 # PLOTTING
 plt.subplot(2, 1, 1)
 plt.plot(time_vector, time_signal)
@@ -75,3 +59,4 @@ plt.plot(fft_freq, fft_amp)
 plt.plot(fft_freq_new, fft_amp_new)
 plt.legend(('old', 'new'))
 plt.show()
+
